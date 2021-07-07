@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `users_info`(
 
 CREATE TABLE IF NOT EXISTS `records`(
     `serial_no` INT(10) AUTO_INCREMENT primary key,
-    `status`  INT(1) default 1 COMMENT '借阅状态：0:借阅中， 1:已归还',
+    `status`  INT(1) default 0 COMMENT '借阅状态：0:借阅中， 1:已归还',
     `user_id` INT(10) not NULL ,
     `book_id` INT(10) not NULL ,
-    `borrow_time` time not NULL,
-    `return_time` time NULL,
+    `borrow_time` timestamp not NULL,
+    `return_time` timestamp NULL,
     `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;

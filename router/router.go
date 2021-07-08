@@ -1,12 +1,18 @@
-package main
+package router
 
 import (
+	"GinProject/handler"
+	"GinProject/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func main() {
-	r := gin.Default()
+func Init() {
+	// Creates a default gin router
+	r := gin.Default() // Grouping routes
+
+	r.Use(middleware.TimerMiddleware())
+	r.Use(middleware.ValidateToken())
 
 	// 默认json路由
 	r.GET("/json", func(context *gin.Context) {
@@ -53,5 +59,11 @@ func main() {
 		})
 	}
 
-	r.Run()
+	// group： v1
+	v1 := r.Group("/v1")
+	{
+		v1.GET("/home", handler.HomePage)
+	}
+
+	r.Run(":8000") // listen and serve on 0.0.0.0:8000
 }

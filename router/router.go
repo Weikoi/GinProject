@@ -1,69 +1,57 @@
 package router
 
 import (
-	"GinProject/handler"
+	"GinProject/controller"
+	"GinProject/controller/book"
+	"GinProject/controller/user"
 	"GinProject/middleware"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func Init() {
 	// Creates a default gin router
-	r := gin.Default() // Grouping routes
+	r := gin.Default()
 
+	// 全局中间件
 	r.Use(middleware.TimerMiddleware())
 	r.Use(middleware.ValidateToken())
 
-	// 默认json路由
-	r.GET("/json", func(context *gin.Context) {
-		data := map[string]interface{}{
-			"name": "Weikoi",
-			"msg":  "hello, golang",
-			"age":  18,
-		}
+	// 默认json路由(测试)
+	r.GET("/json", controller.Json)
 
-		context.JSON(http.StatusOK, data)
-	})
+	// HomePage route
+	// 主页路由
+	r.GET("", controller.HomePage)
 
-	// homePage
-	r.GET("", func(context *gin.Context) {
-
-		data := map[string]interface{}{
-			"name": "Home",
-		}
-		context.JSON(http.StatusOK, data)
-	})
-
+	// No route
 	// 无效路由
-	r.NoRoute(func(context *gin.Context) {
-		data := map[string]interface{}{
-			"name": "NotFound",
-		}
-		context.JSON(http.StatusNotFound, data)
-	})
+	r.NoRoute(controller.NoRouter)
 
-	// 路由组
+	// Grouping routes
+	// 用户路由组
+	userGroup := r.Group("/user")
+	{
+		userGroup.POST("/register", user.Register)
+		userGroup.POST("/login", user.Login)
+		userGroup.POST("/update", user.UpdateInfo)
+		userGroup.POST("/logout", user.Logout)
+		userGroup.POST("/delete", user.Delete)
+	}
+
+	// 图书路由组
 	bookGroup := r.Group("/book")
 	{
-		bookGroup.GET("/addBook", func(context *gin.Context) {
-
-		})
-		bookGroup.GET("/getBook", func(context *gin.Context) {
-
-		})
-		bookGroup.GET("/updateBook", func(context *gin.Context) {
-
-		})
-		bookGroup.GET("/deleteBook", func(context *gin.Context) {
-
-		})
+		bookGroup.POST("/add", Book.Add)
+		bookGroup.GET("/get", Book.Get)
+		bookGroup.POST("/update", Book.Update)
+		bookGroup.POST("/delete", Book.Delete)
 	}
 
-	// group： v1
+	// restful api group：v1
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/home", handler.HomePage)
+		v1.GET("/home", controller.HomePage)
 	}
 
-	r.Run(":8000") // listen and serve on 0.0.0.0:8000
+	r.Run(":8080") // listen and serve on 0.0.0.0:8080
 }

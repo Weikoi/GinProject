@@ -17,3 +17,6 @@
 # ide
 /.idea
 /go.sum
+
+# demo
+/demo
